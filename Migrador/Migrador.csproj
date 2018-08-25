@@ -146,6 +146,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Configuracao.cs" />
+    <Compile Include="Migracao02.cs" />
     <Compile Include="Migracao01.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

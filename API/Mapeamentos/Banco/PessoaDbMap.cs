@@ -1,11 +1,9 @@
 ﻿using AgendaNUINF.API.Entidades;
 using FluentNHibernate.Mapping;
 
-namespace AgendaNUINF.API.DbMappings
-{
-    public class PessoaMap: ClassMap<Pessoa>
-    {
-        public PessoaMap() {
+namespace AgendaNUINF.API.Mapeamentos.Banco {
+    public class PessoaDbMap : ClassMap<Pessoa> {
+        public PessoaDbMap() {
             Id(p => p.Id);
 
             Map(p => p.Nome);

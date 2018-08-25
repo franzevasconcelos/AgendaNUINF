@@ -1,45 +1,38 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
+﻿using System.Collections.Generic;
 using System.Web.Http;
-using AgendaNUINF.API.Entidades;
+using System.Web.Http.Results;
+using AgendaNUINF.API.Models;
+using AgendaNUINF.EntidadesDTO;
 
 namespace AgendaNUINF.API.Controllers {
     public class PessoasController : ApiController {
+        private readonly PessoaNegocio _pessoaNegocio;
+
+        public PessoasController(PessoaNegocio pessoaNegocio) {
+            _pessoaNegocio = pessoaNegocio;
+        }
+
         // GET: api/Pessoas
-        public IEnumerable<Pessoa> Get() {
-            return new List<Pessoa>
-                   {
-                       new Pessoa
-                       {
-                           Id = 1,
-                           Nome = "Fulano da Silva",
-                           Telefones = new List<Telefone>
-                                       {
-                                           new Telefone
-                                           {
-                                               Id = 1,
-                                               DDD = "85",
-                                               Numero =
-                                                   "999998888"
-                                           }
-                                       }
-                       }
-                   };
+        public IEnumerable<PessoaDTO> Get() {
+            return _pessoaNegocio.ListarPessoas();
         }
 
         // GET: api/Pessoas/5
-        public string Get(int id) {
-            return "value";
+        public PessoaDTO Get(int id) {
+            return _pessoaNegocio.PorId(id);
         }
 
         // POST: api/Pessoas
-        public void Post([FromBody] string value) { }
+        public IHttpActionResult Post([FromBody] PessoaDTO pessoa) {
+            var idInserido =_pessoaNegocio.InserirPessoa(pessoa);
+
+            return CreatedAtRoute<PessoaDTO>("DefaultApi", new {controller = "pessoas", id = idInserido}, null);
+        }
 
         // PUT: api/Pessoas/5
-        public void Put(int id, [FromBody] string value) { }
+        public void Put(int id, [FromBody] PessoaDTO pessoa) {
+            _pessoaNegocio.Atualizar(pessoa);
+        }
 
         // DELETE: api/Pessoas/5
         public void Delete(int id) { }
