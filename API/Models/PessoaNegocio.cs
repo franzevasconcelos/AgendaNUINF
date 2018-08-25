@@ -66,5 +66,9 @@ namespace AgendaNUINF.API.Models {
 
             return _mapper.Map<PessoaDTO>(pessoa);
         }
+
+        public virtual void Remover(int id) {
+            _pessoaRepository.Remover(id);
+        }
     }
 }
