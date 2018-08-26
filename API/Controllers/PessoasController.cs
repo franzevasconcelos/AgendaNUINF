@@ -12,9 +12,8 @@ namespace AgendaNUINF.API.Controllers {
             _pessoaNegocio = pessoaNegocio;
         }
 
-        // GET: api/Pessoas
-        public IEnumerable<PessoaDTO> Get() {
-            return _pessoaNegocio.ListarPessoas();
+        public IEnumerable<PessoaDTO> Get(string nome = null, string cpf = null) {
+            return _pessoaNegocio.ListarPessoas(nome, cpf);
         }
 
         // GET: api/Pessoas/5

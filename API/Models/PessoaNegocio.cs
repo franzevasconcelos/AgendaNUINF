@@ -58,6 +58,10 @@ namespace AgendaNUINF.API.Models {
             return _mapper.Map<IList<PessoaDTO>>(_pessoaRepository.Todas());
         }
 
+        public virtual IList<PessoaDTO> ListarPessoas(string nome, string cpf) {
+            return _mapper.Map<IList<PessoaDTO>>(_pessoaRepository.Pequisa(nome, cpf));
+        }
+
         public virtual PessoaDTO PorId(int id) {
             var pessoa = _pessoaRepository.PorId(id);
 

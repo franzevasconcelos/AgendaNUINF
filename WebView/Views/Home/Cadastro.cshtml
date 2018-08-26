@@ -63,15 +63,40 @@
     <script type="text/javascript">
         $().ready(function() {
             $('#btnAdicionarTelefone').click(function() {
-                AdicionarTelefone();
-            });
+                if (!$('#adicionarNumero').inputmask("isComplete") || !$('#adicionarDDD').inputmask("isComplete")) {
+                    return;
+                }
 
-            $('#telefones').on('click','.btnDeletarTelefone',function() {
-                $.get('@Url.Action("DeletarTelefone")')
-                    .done(function() {
-                        
+                let idPessoa = $("#Id").val();
+
+                if (idPessoa <= 0) {
+                    AdicionarTelefone();
+                    return;
+                }
+
+                let ddd = $('#adicionarDDD').inputmask('unmaskedvalue');
+                let numero = $('#adicionarNumero').inputmask('unmaskedvalue');
+
+                $.post('@Url.Action("AdicionarTelefone")', { id: 0, ddd: ddd, numero: numero, idPessoa: idPessoa })
+                    .done(function(data) {
+                        $("#telefones").html(data);
+
+                        $('#adicionarDDD').val('');
+                        $('#adicionarNumero').val('');
                     });
             });
+
+            $('#telefones').on('click',
+                '.btnDeletarTelefone',
+                function() {
+                    let idPessoa = $("#Id").val();
+                    let idTelefone = $(this).data("id");
+
+                    $.get('@Url.Action("DeletarTelefone")', { id: idTelefone, idPessoa: idPessoa })
+                        .done(function(data) {
+                            $("#telefones").html(data);
+                        });
+                });
         });
 
         function AdicionarTelefone() {

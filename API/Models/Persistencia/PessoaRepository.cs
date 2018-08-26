@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using AgendaNUINF.API.Entidades;
 using NHibernate;
+using NHibernate.Criterion;
+using NHibernate.Linq;
 
 namespace AgendaNUINF.API.Models.Persistencia {
     public class PessoaRepository {
@@ -45,6 +47,22 @@ namespace AgendaNUINF.API.Models.Persistencia {
             return _sessao.QueryOver<Telefone>()
                    .Where(t => t.Pessoa.Id == id)
                    .List();
+        }
+
+        public IList<Pessoa> Pequisa(string nome, string cpf) {
+            var query = _sessao.QueryOver<Pessoa>();
+
+            if (!string.IsNullOrEmpty(nome) && !string.IsNullOrEmpty(cpf))
+                query.Where(p => p.Nome.IsLike(nome, MatchMode.Anywhere))
+                     .And(p => p.CPF == cpf);
+
+            if (string.IsNullOrEmpty(nome) && !string.IsNullOrEmpty(cpf))
+                query.Where(p => p.CPF == cpf);
+
+            if (!string.IsNullOrEmpty(nome) && string.IsNullOrEmpty(cpf))
+                query.Where(p => p.Nome.IsLike(nome, MatchMode.Anywhere));
+
+            return query.List();
         }
     }
 }

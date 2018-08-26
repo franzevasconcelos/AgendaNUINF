@@ -17,7 +17,7 @@ namespace WebView.Models {
         }
 
         public static string Telefone(int idTelefone, int idPessoa) {
-            return $"{UrlBase}/api/pessoas/{idPessoa}/telefones{idTelefone}";
+            return $"{UrlBase}/api/pessoas/{idPessoa}/telefones/{idTelefone}";
         }
     }
 }

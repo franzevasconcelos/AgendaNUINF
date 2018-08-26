@@ -32,12 +32,30 @@ namespace WebView.Controllers {
         }
 
         [HttpPost]
-        public ActionResult Pesquisa(PesquisaViewModel viewModel) {
-            return PartialView("_Listagem");
+        public ActionResult Index(PesquisaViewModel viewModel) {
+            try
+            {
+                string obj;
+                using (var client = new WebClient())
+                {
+                    obj = client.DownloadString(API.Pessoas() + $"?nome={viewModel.Nome}&cpf={viewModel.CPF}");
+                }
+
+                var pessoasDTO = JsonConvert.DeserializeObject(obj, typeof(List<PessoaDTO>));
+                var listaPessoasViewModel = Mapper.Map<List<ListagemViewModel>>(pessoasDTO);
+
+                return View(listaPessoasViewModel);
+            }
+            catch (WebException ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+                return View(new List<ListagemViewModel>());
+            }
+
         }
 
         public ActionResult Cadastro() {
-            return View(new CadastroViewModel());
+            return View(new CadastroViewModel{Telefones = new List<TelefoneViewModel>()});
         }
 
         [HttpPost]
@@ -103,6 +121,30 @@ namespace WebView.Controllers {
                 }
 
                 return RedirectToAction("Index");
+            } catch (WebException ex) {
+                ModelState.AddModelError(string.Empty, ex.Message);
+                return RedirectToAction("Index");
+            }
+        }
+
+        [HttpPost]
+        public ActionResult AdicionarTelefone(int idPessoa, TelefoneViewModel viewModel) {
+            try {
+                using (var client = new WebClient()) {
+                    var telefone = Mapper.Map<TelefoneDTO>(viewModel);
+
+                    client.Headers.Add(HttpRequestHeader.ContentType, "application/json");
+                    client.UploadString(API.Telefones(idPessoa), "POST", JsonConvert.SerializeObject(telefone));
+                }
+
+                string obj;
+                using (var client = new WebClient()) {
+                    obj = client.DownloadString(API.Telefones(idPessoa));
+                }
+
+                var telefonesDTO = JsonConvert.DeserializeObject(obj, typeof(List<TelefoneDTO>));
+                var novaViewModel = Mapper.Map<List<TelefoneViewModel>>(telefonesDTO);
+                return PartialView("_Telefones", novaViewModel);
             } catch (WebException ex) {
                 ModelState.AddModelError(string.Empty, ex.Message);
                 return RedirectToAction("Index");
