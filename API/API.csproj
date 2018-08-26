@@ -143,6 +143,7 @@
     <Compile Include="Configuracoes\NhibernateSetup.cs" />
     <Compile Include="Configuracoes\SimpleInjector.cs" />
     <Compile Include="Controllers\PessoasController.cs" />
+    <Compile Include="Controllers\TelefonesController.cs" />
     <Compile Include="Mapeamentos\Banco\PessoaDbMap.cs" />
     <Compile Include="Mapeamentos\Banco\TelefoneDbMap.cs" />
     <Compile Include="Entidades\EntidadeBase.cs" />
@@ -156,6 +157,7 @@
     <Compile Include="Models\Exceptions\PessoaNaoEncontradaException.cs" />
     <Compile Include="Models\Persistencia\PessoaRepository.cs" />
     <Compile Include="Models\PessoaNegocio.cs" />
+    <Compile Include="Models\TelefoneNegocio.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

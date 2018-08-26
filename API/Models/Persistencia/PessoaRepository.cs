@@ -16,6 +16,7 @@ namespace AgendaNUINF.API.Models.Persistencia {
 
         public virtual void Atualizar(Pessoa pessoa) {
             _sessao.SaveOrUpdate(pessoa);
+            _sessao.Flush();
         }
 
         public virtual Pessoa PorId(int id) {
@@ -29,9 +30,21 @@ namespace AgendaNUINF.API.Models.Persistencia {
         }
 
         public virtual void Remover(int id) {
-            _sessao.CreateQuery("DELETE PESSOA WHERE Id = :id")
+            _sessao.CreateQuery("DELETE Pessoa WHERE Id = :id")
                    .SetInt32("id", id)
                    .ExecuteUpdate();
+        }
+
+        public virtual void RemoverTelefone(int id) {
+            _sessao.CreateQuery("DELETE Telefone WHERE Id = :id")
+                   .SetInt32("id", id)
+                   .ExecuteUpdate();
+        }
+
+        public virtual IList<Telefone> TelefonesPorPessoa(int id) {
+            return _sessao.QueryOver<Telefone>()
+                   .Where(t => t.Pessoa.Id == id)
+                   .List();
         }
     }
 }

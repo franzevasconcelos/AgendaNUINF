@@ -1,4 +1,5 @@
-﻿using FluentMigrator;
+﻿using System.Data;
+using FluentMigrator;
 
 namespace AgendaNUINF.Migrador {
     [Migration(01, "Migração inicial")]
@@ -34,7 +35,8 @@ namespace AgendaNUINF.Migrador {
                   .NotNullable()
                   .WithColumn("pessoa_id")
                   .AsInt32()
-                  .ForeignKey("pessoa", "id");
+                  .ForeignKey("pessoa", "id")
+                  .OnDeleteOrUpdate(Rule.Cascade);
         }
 
         public override void Down() { }

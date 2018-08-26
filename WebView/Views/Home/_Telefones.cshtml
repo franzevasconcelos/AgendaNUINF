@@ -1,0 +1,38 @@
+﻿@model IList<WebView.ViewModels.TelefoneViewModel>
+<div class="row">
+    <div class="col-md-6">
+        <table class="table table-condensed" id="tabelaNumeros">
+            <thead>
+            <tr>
+                <th class="col-md-1">ID</th>
+                <th class="col-md-1">DDD</th>
+                <th class="col-md-3">Telefone</th>
+                <th class="col-md-1">Ações</th>
+            </tr>
+            </thead>
+            <tbody>
+            @if (Model != null) {
+                for (var i = 0; i < Model.Count; i++) {
+                    <tr>
+                        <td>
+                            @Model[i].Id
+                            @Html.Hidden($"Telefones[{i}].Id", Model[i].Id)
+                            @Html.Hidden($"Telefones[{i}].DDD", Model[i].DDD)
+                            @Html.Hidden($"Telefones[{i}].Numero", Model[i].Numero)
+                        </td>
+                        <td>
+                            @Model[i].DDD
+                        </td>
+                        <td>
+                            <span class="mascara-telefone">@Model[i].Numero</span>
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-default btnDeletarTelefone">Deletar</button>
+                        </td>
+                    </tr>
+                }
+            }
+            </tbody>
+        </table>
+    </div>
+</div>

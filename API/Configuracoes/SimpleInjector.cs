@@ -15,6 +15,8 @@ namespace AgendaNUINF.API.Configuracoes {
 
             container.Register<PessoaRepository>(Lifestyle.Transient);
             container.Register<PessoaNegocio>(Lifestyle.Transient);
+            container.Register<TelefoneNegocio>(Lifestyle.Transient);
+
             container.Register<ISession>(() => NhibernateSetup.SessionFactory.OpenSession(),
                                          new AsyncScopedLifestyle());
 
