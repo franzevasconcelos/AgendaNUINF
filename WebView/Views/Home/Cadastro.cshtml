@@ -29,7 +29,7 @@
                         </div>
                         <div class="col-md-4">
                             @Html.LabelFor(m => m.DataNascimento)
-                            @Html.TextBoxFor(m => m.DataNascimento, new {@class = "form-control"})
+                            @Html.TextBoxFor(m => m.DataNascimento, new {@class = "form-control mascara-data"})
                         </div>
                     </div>
 
@@ -83,6 +83,8 @@
 
                         $('#adicionarDDD').val('');
                         $('#adicionarNumero').val('');
+                        $('body ').find('.mascara-telefone').inputmask('99999-9999');
+
                     });
             });
 
@@ -92,12 +94,44 @@
                     let idPessoa = $("#Id").val();
                     let idTelefone = $(this).data("id");
 
+                    if (idPessoa <= 0) {
+                        $(this).closest("tr").remove();
+                        RemoverTelefone();
+                        return;
+                    }
+
                     $.get('@Url.Action("DeletarTelefone")', { id: idTelefone, idPessoa: idPessoa })
                         .done(function(data) {
                             $("#telefones").html(data);
+                            $('body ').find('.mascara-telefone').inputmask('99999-9999');
                         });
                 });
         });
+
+        function RemoverTelefone() {
+            let tbody = $("#tabelaNumeros tbody");
+            let linhas = tbody.find("tr");
+            let novasLinhas = [];
+            let contador = 0;
+
+            $.each(linhas,
+                function (item) {
+                    console.log(linhas[item]);
+                    let ddd = $(linhas[item]).find("td input[name$='DDD']").val();
+                    let numero = $(linhas[item]).find("td input[name$='Numero']").val();
+                    console.log(ddd + " " + numero);
+                    novasLinhas.push(CriaLinha(ddd, numero, contador));
+                    contador++;
+                });
+
+            tbody.html('');
+            $.each(novasLinhas,
+                function(i) {
+                    tbody.append(novasLinhas[i]);
+                });
+
+            $('body ').find('.mascara-telefone').inputmask('99999-9999');
+        }
 
         function AdicionarTelefone() {
             let ddd = $('#adicionarDDD').val();
@@ -108,11 +142,17 @@
                 return;
             }
             
-
             let tbody = $("#tabelaNumeros tbody");
             let totalLinhas = tbody.find("tr").length;
-            console.log(totalLinhas);
 
+            let tr = CriaLinha(ddd, numero, totalLinhas);
+            tbody.append(tr);
+
+            $('#adicionarDDD').val('');
+            $('#adicionarNumero').val('');
+        }
+
+        function CriaLinha(ddd, numero, totalLinhas) {
             let tr = $("<tr></tr>");
             let tdId = $("<td>0<input type='hidden' name='Telefones[" + totalLinhas +"].Id' value='0'/></td>");
 
@@ -123,7 +163,7 @@
             inputDDD.attr("name", "Telefones[" + totalLinhas + "].DDD");
 
             let tdNumero = $("<td></td>");
-            tdNumero.html(numero);
+            tdNumero.html("<span class='mascara-telefone'>" + numero + "</span>");
             let inputNumero = $("<input type='hidden'/>");
             inputNumero.attr("value", numero.replace(/_|-/g, ""));
             inputNumero.attr("name", "Telefones[" + totalLinhas + "].Numero");
@@ -131,16 +171,14 @@
             tdId.append(inputDDD);
             tdId.append(inputNumero);
 
-            let tdAcoes = $("<td><button type='button' class='btn btn-default'>Deletar</button></td>");
+            let tdAcoes = $("<td><button type='button' class='btn btn-default btnDeletarTelefone'>Deletar</button></td>");
 
             tr.append(tdId);
             tr.append(tdDDD);
             tr.append(tdNumero);
             tr.append(tdAcoes);
-            tbody.append(tr);
 
-            $('#adicionarDDD').val('');
-            $('#adicionarNumero').val('');
+            return tr;
         }
     </script>
 }

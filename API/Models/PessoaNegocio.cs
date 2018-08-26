@@ -54,6 +54,7 @@ namespace AgendaNUINF.API.Models {
             _pessoaRepository.Atualizar(pessoaEncontrada);
         }
 
+
         public virtual IList<PessoaDTO> ListarPessoas() {
             return _mapper.Map<IList<PessoaDTO>>(_pessoaRepository.Todas());
         }

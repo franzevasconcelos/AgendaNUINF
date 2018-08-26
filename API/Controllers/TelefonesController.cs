@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Web.Http;
+﻿using System.Web.Http;
 using AgendaNUINF.API.Models;
+using AgendaNUINF.API.Models.Exceptions;
 using AgendaNUINF.EntidadesDTO;
 
 namespace AgendaNUINF.API.Controllers {
@@ -16,20 +12,34 @@ namespace AgendaNUINF.API.Controllers {
             _telefoneNegocio = telefoneNegocio;
         }
 
-        // POST: api/Telefones
         [Route("telefones")]
-        public void Post(int idPessoa, [FromBody] TelefoneDTO telefoneDto) {
-            _telefoneNegocio.Adicionar(idPessoa, telefoneDto);
+        public IHttpActionResult Post(int idPessoa, [FromBody] TelefoneDTO telefoneDto) {
+            if (idPessoa <= 0)
+                return BadRequest("Informe um id válido");
+
+            try {
+                _telefoneNegocio.Adicionar(idPessoa, telefoneDto);
+            } catch (PessoaNaoEncontradaException) {
+                return NotFound();
+            }
+
+            return Created<PessoaDTO>($"api/pessoas/{idPessoa}/telefones", null);
         }
 
-        // DELETE: api/Telefones/5
         [Route("telefones/{id}")]
-        public void Delete(int id, int idPessoa) {
+        public IHttpActionResult Delete(int id, int idPessoa) {
+            if (idPessoa <= 0 || id <= 0)
+                return BadRequest("Informe um id válido");
+
             _telefoneNegocio.Remover(id);
+            return Ok();
         }
         
         [Route("telefones")]
         public IHttpActionResult GetPorPessoa(int idPessoa) {
+            if (idPessoa <= 0)
+                return BadRequest("Informe um id válido");
+
             return Ok(_telefoneNegocio.Listar(idPessoa));
         }
     }

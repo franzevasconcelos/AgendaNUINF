@@ -24,7 +24,7 @@ namespace AgendaNUINF.API.Models {
             return _mapper.Map<List<TelefoneDTO>>(telefones);
         }
 
-        public void Adicionar(int idPessoa, TelefoneDTO telefoneDto) {
+        public virtual void Adicionar(int idPessoa, TelefoneDTO telefoneDto) {
             var pessoa = _pessoaRepository.PorId(idPessoa);
 
             if(pessoa == null)

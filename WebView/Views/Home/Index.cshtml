@@ -13,15 +13,15 @@
             <div class="row">
                 <div class="col-md-3">
                     <label>Nome</label>
-                    <input type="text" class="form-control" name="nome" />
+                    <input type="text" class="form-control" name="nome" id="nome" />
                 </div>
                 <div class="col-md-3">
                     <label>CPF</label>
-                    <input type="text" class="form-control" name="cpf" />
+                    <input type="text" class="form-control mascara-cpf" name="cpf" id="cpf"/>
                 </div>
                 <div class="col-md-4">
                     <label style="display: block">&nbsp;</label>
-                    <button type="submit" class="btn btn-primary">
+                    <button type="button" class="btn btn-primary" id="btnPesquisar">
                         <i class="glyphicon glyphicon-search"></i> Pesquisar
                     </button>
                     @Html.ActionLink("Cadastrar", "Cadastro", null, new { @class = "btn btn-default" })
@@ -31,4 +31,25 @@
     </div>
 </div>
 <br/>
-@Html.Partial("_Listagem", Model)
+<div id="listagem">
+    @Html.Partial("_Listagem", Model)
+</div>
+@section scripts {
+    <script type="text/javascript">
+        $().ready(function() {
+            $('#btnPesquisar').on('click',
+                function () {
+                    let nome = $('#nome').val();
+                    let cpf = $('#cpf').inputmask('unmaskedvalue');
+
+                    $.post('@Url.Action("Index")', { nome: nome, cpf: cpf })
+                        .done(function(data) {
+                            $("#listagem").html(data);
+
+                            $('.mascara-cpf').inputmask("999.999.999-99", { removeMaskOnSubmit: true });
+                        });
+
+                });
+        });
+    </script>
+}

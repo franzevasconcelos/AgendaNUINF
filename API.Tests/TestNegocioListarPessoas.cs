@@ -39,6 +39,28 @@ namespace API.Tests {
         }
 
         [Test]
+        public void DeveListarTodasPessoasComFiltro()
+        {
+            var pessoaRepository = Substitute.For<PessoaRepository>((ISession)null);
+            pessoaRepository.Pequisa("fulano", Arg.Any<string>())
+                            .Returns(new List<Pessoa>
+                                     {
+                                         new Pessoa
+                                         {
+                                             Id = 1,
+                                             Nome = "Fulano"
+                                         }
+                                     });
+
+            var pessoaNegocio = new PessoaNegocio(pessoaRepository, Mapper.Instance);
+
+            var retorno = pessoaNegocio.ListarPessoas("fulano", null);
+
+            Assert.That(retorno.Count, Is.EqualTo(1));
+            Assert.That(retorno[0].Id, Is.EqualTo(1));
+        }
+
+        [Test]
         public void DeveTrazerPessoaPorId() {
             var pessoaRepository = Substitute.For<PessoaRepository>((ISession) null);
             pessoaRepository.PorId(3)

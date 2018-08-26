@@ -49,7 +49,7 @@ namespace AgendaNUINF.API.Models.Persistencia {
                    .List();
         }
 
-        public IList<Pessoa> Pequisa(string nome, string cpf) {
+        public virtual IList<Pessoa> Pequisa(string nome, string cpf) {
             var query = _sessao.QueryOver<Pessoa>();
 
             if (!string.IsNullOrEmpty(nome) && !string.IsNullOrEmpty(cpf))

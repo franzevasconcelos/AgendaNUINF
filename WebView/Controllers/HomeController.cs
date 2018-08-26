@@ -27,35 +27,26 @@ namespace WebView.Controllers {
             }
         }
 
-        public ActionResult Listagem() {
-            return PartialView("_Listagem");
-        }
-
         [HttpPost]
         public ActionResult Index(PesquisaViewModel viewModel) {
-            try
-            {
+            try {
                 string obj;
-                using (var client = new WebClient())
-                {
+                using (var client = new WebClient()) {
                     obj = client.DownloadString(API.Pessoas() + $"?nome={viewModel.Nome}&cpf={viewModel.CPF}");
                 }
 
                 var pessoasDTO = JsonConvert.DeserializeObject(obj, typeof(List<PessoaDTO>));
                 var listaPessoasViewModel = Mapper.Map<List<ListagemViewModel>>(pessoasDTO);
 
-                return View(listaPessoasViewModel);
-            }
-            catch (WebException ex)
-            {
+                return PartialView("_Listagem", listaPessoasViewModel);
+            } catch (WebException ex) {
                 ModelState.AddModelError(string.Empty, ex.Message);
                 return View(new List<ListagemViewModel>());
             }
-
         }
 
         public ActionResult Cadastro() {
-            return View(new CadastroViewModel{Telefones = new List<TelefoneViewModel>()});
+            return View(new CadastroViewModel {Telefones = new List<TelefoneViewModel>()});
         }
 
         [HttpPost]
