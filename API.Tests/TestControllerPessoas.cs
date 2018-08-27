@@ -106,5 +106,17 @@ namespace API.Tests {
 
             Assert.DoesNotThrow(() => pessoasController.Delete(1));
         }
+
+        [Test]
+        public void DeveRetornarBadRequestAoInserirPessoaComCpfJaExistente()
+        {
+            var pessoaNegocio = Substitute.For<PessoaNegocio>(null, null);
+            pessoaNegocio.InserirPessoa(Arg.Any<PessoaDTO>()).Throws(new CPFExistenteException());
+
+            var pessoasController = new PessoasController(pessoaNegocio);
+            var retorno = pessoasController.Post(new PessoaDTO());
+
+            Assert.IsInstanceOf<BadRequestErrorMessageResult>(retorno);
+        }
     }
 }

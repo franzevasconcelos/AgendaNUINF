@@ -17,6 +17,12 @@ namespace AgendaNUINF.API.Models {
         }
 
         public virtual int InserirPessoa(PessoaDTO pessoa) {
+            if (!string.IsNullOrEmpty(pessoa.CPF)) {
+                var pessoaEncontrada = _pessoaRepository.Pequisa(null, pessoa.CPF);
+                if (pessoaEncontrada != null && pessoaEncontrada.Any())
+                    throw new CPFExistenteException("CPF já existe na base");
+            }
+
             var pessoaASalvar = _mapper.Map<Pessoa>(pessoa);
             foreach (var telefone in pessoaASalvar.Telefones) {
                 telefone.Pessoa = pessoaASalvar;

@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net;
 using System.Web.Mvc;
 using AgendaNUINF.EntidadesDTO;
 using AutoMapper;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using WebView.Models;
 using WebView.ViewModels;
 
@@ -61,7 +63,11 @@ namespace WebView.Controllers {
                 try {
                     client.UploadString(API.Pessoas(), "POST", JsonConvert.SerializeObject(novaPessoa));
                 } catch (WebException ex) {
-                    ModelState.AddModelError(string.Empty, ex.Message);
+                    var resposta = new StreamReader(ex.Response.GetResponseStream()).ReadToEnd();
+
+                    dynamic obj = JsonConvert.DeserializeObject<dynamic>(resposta);
+                    ModelState.AddModelError(string.Empty, obj.Message.ToString());
+                    return View(viewModel);
                 }
 
                 return RedirectToAction("Index");

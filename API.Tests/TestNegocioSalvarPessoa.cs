@@ -84,6 +84,19 @@ namespace API.Tests {
             Assert.Throws<PessoaNaoEncontradaException>(() => pessoaNegocio.Atualizar(PessoaDto()));
         }
 
+        [Test]
+        public void DeveLancarExcecaoAoInserirNovaPessoaComCpfJaExistente() {
+            var pessoaRepository = Substitute.For<PessoaRepository>((ISession)null);
+            pessoaRepository.Pequisa(null, "1").Returns(new List<Pessoa> {new Pessoa()});
+
+            var pessoaNegocio = new PessoaNegocio(pessoaRepository, null);
+
+            var pessoaDto = PessoaDto();
+            pessoaDto.CPF = "1";
+            Assert.Throws<CPFExistenteException>(() => pessoaNegocio.InserirPessoa(pessoaDto));
+
+        }
+
         private static PessoaDTO PessoaDto() {
             PessoaDTO dto = new PessoaDTO
                             {

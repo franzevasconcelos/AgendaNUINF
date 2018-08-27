@@ -30,7 +30,12 @@ namespace AgendaNUINF.API.Controllers {
 
         // POST: api/Pessoas
         public IHttpActionResult Post([FromBody] PessoaDTO pessoa) {
-            var idInserido = _pessoaNegocio.InserirPessoa(pessoa);
+            int idInserido;
+            try {
+                idInserido = _pessoaNegocio.InserirPessoa(pessoa);
+            } catch (CPFExistenteException e) {
+                return BadRequest(e.Message);
+            }
 
             return CreatedAtRoute<PessoaDTO>("DefaultApi", new {controller = "pessoas", id = idInserido}, null);
         }

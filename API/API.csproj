@@ -154,6 +154,7 @@
     </Compile>
     <Compile Include="Mapeamentos\PessoaMapper.cs" />
     <Compile Include="Mapeamentos\TelefoneMapper.cs" />
+    <Compile Include="Models\Exceptions\CPFExistenteException.cs" />
     <Compile Include="Models\Exceptions\PessoaNaoEncontradaException.cs" />
     <Compile Include="Models\Persistencia\PessoaRepository.cs" />
     <Compile Include="Models\PessoaNegocio.cs" />
