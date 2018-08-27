@@ -1,5 +1,5 @@
 ﻿using System.Configuration;
-using AgendaNUINF.API.DbMappings;
+using AgendaNUINF.API.Mapeamentos.Banco;
 using FluentNHibernate.Cfg;
 using FluentNHibernate.Cfg.Db;
 using NHibernate;
@@ -15,7 +15,7 @@ namespace AgendaNUINF.API.Configuracoes {
                                                .Standard
                                                .UsingFile(ArquivoSqlite)
                                                .ShowSql())
-                                     .Mappings(m => m.FluentMappings.AddFromAssembly(typeof(PessoaMap).Assembly))
+                                     .Mappings(m => m.FluentMappings.AddFromAssembly(typeof(PessoaDbMap).Assembly))
                                      .ExposeConfiguration(config => {
                                          config.SetProperty("current_session_context_class", "web");
                                          //config.SetProperty("hbm2ddl.auto", "validate");

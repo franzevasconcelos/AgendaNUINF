@@ -1,0 +1,46 @@
+﻿@using WebView.ViewModels
+@model List<WebView.ViewModels.ListagemViewModel>
+
+@if (Model.Any()) {
+    <div class="row">
+        <div class="col-md-12">
+            <table class="table table-condensed">
+                <thead>
+                <tr>
+                    <th class="col-md-1">ID</th>
+                    <th>Nome</th>
+                    <th>Email</th>
+                    <th>CPF</th>
+                    <th class="col-md-1">Idade</th>
+                    <th class="col-md-2">Qtd. Telefones</th>
+                    <th class="col-md-2">Ações</th>
+                </tr>
+                </thead>
+                <tbody>
+                @foreach (var pessoa in Model) {
+                    <tr>
+                        <td>
+                            @pessoa.Id
+                        </td>
+                        <td>@pessoa.Nome</td>
+                        <td>
+                            @pessoa.Email
+                        </td>
+                        <td>
+                            <span class="mascara-cpf">@pessoa.CPF</span>
+                        </td>
+                        <td>@pessoa.Idade</td>
+                        <td>@pessoa.QuantidadeTelefones</td>
+                        <td>
+                            @Html.ActionLink("Editar", "Editar", null, new { id = pessoa.Id }, new { @class = "btn btn-default" })
+                            @Html.ActionLink("Deletar", "Deletar", null, new { id = pessoa.Id }, new { @class = "btn btn-danger" })
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    </div>
+} else {
+    <h4>Não existem pessoas a exibir</h4>
+}

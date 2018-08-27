@@ -1,0 +1,184 @@
+﻿@model WebView.ViewModels.CadastroViewModel
+@{
+    ViewBag.Title = "Cadastro de pessoa";
+}
+
+<h3>Cadastro de pessoa</h3>
+<hr/>
+<div class="row">
+    <div class="col-md-12">
+        @Html.ValidationSummary(false)
+        @using (Html.BeginForm()) {
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="row">
+                        <div class="col-md-4">
+                            @Html.LabelFor(m => m.Nome)
+                            @Html.HiddenFor(m => m.Id)
+                            @Html.TextBoxFor(m => m.Nome, new {@class = "form-control"})
+                        </div>
+                        <div class="col-md-4">
+                            @Html.LabelFor(m => m.CPF)
+                            @Html.TextBoxFor(m => m.CPF, new {@class = "form-control mascara-cpf"})
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            @Html.LabelFor(m => m.Email)
+                            @Html.TextBoxFor(m => m.Email, new {@class = "form-control"})
+                        </div>
+                        <div class="col-md-4">
+                            @Html.LabelFor(m => m.DataNascimento)
+                            @Html.TextBoxFor(m => m.DataNascimento, new {@class = "form-control mascara-data"})
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <hr/>
+            <div class="row">
+                <div class="col-md-1">
+                    <label>DDD</label>
+                    <input type="text" name="adicionarDDD" class="form-control mascara-ddd" id="adicionarDDD"/>
+                </div>
+                <div class="col-md-2">
+                    <label>Telefone</label>
+                    <input type="text" name="adicionarNumero" class="form-control mascara-telefone" id="adicionarNumero"/>
+                </div>
+                <div class="col-md-1">
+                    <label>&nbsp;</label>
+                    <button class="btn btn-default" type="button" id="btnAdicionarTelefone">Adicionar</button>
+                </div>
+            </div>
+            <br/>
+            <div id="telefones">
+                @Html.Partial("_Telefones", Model.Telefones)
+            </div>
+            <br/>
+            <button type="submit" class="btn btn-primary">Cadastrar</button>
+        }
+    </div>
+</div>
+@section scripts {
+    <script type="text/javascript">
+        $().ready(function() {
+            $('#btnAdicionarTelefone').click(function() {
+                if (!$('#adicionarNumero').inputmask("isComplete") || !$('#adicionarDDD').inputmask("isComplete")) {
+                    return;
+                }
+
+                let idPessoa = $("#Id").val();
+
+                if (idPessoa <= 0) {
+                    AdicionarTelefone();
+                    return;
+                }
+
+                let ddd = $('#adicionarDDD').inputmask('unmaskedvalue');
+                let numero = $('#adicionarNumero').inputmask('unmaskedvalue');
+
+                $.post('@Url.Action("AdicionarTelefone")', { id: 0, ddd: ddd, numero: numero, idPessoa: idPessoa })
+                    .done(function(data) {
+                        $("#telefones").html(data);
+
+                        $('#adicionarDDD').val('');
+                        $('#adicionarNumero').val('');
+                        $('body ').find('.mascara-telefone').inputmask('99999-9999');
+
+                    });
+            });
+
+            $('#telefones').on('click',
+                '.btnDeletarTelefone',
+                function() {
+                    let idPessoa = $("#Id").val();
+                    let idTelefone = $(this).data("id");
+
+                    if (idPessoa <= 0) {
+                        $(this).closest("tr").remove();
+                        RemoverTelefone();
+                        return;
+                    }
+
+                    $.get('@Url.Action("DeletarTelefone")', { id: idTelefone, idPessoa: idPessoa })
+                        .done(function(data) {
+                            $("#telefones").html(data);
+                            $('body ').find('.mascara-telefone').inputmask('99999-9999');
+                        });
+                });
+        });
+
+        function RemoverTelefone() {
+            let tbody = $("#tabelaNumeros tbody");
+            let linhas = tbody.find("tr");
+            let novasLinhas = [];
+            let contador = 0;
+
+            $.each(linhas,
+                function (item) {
+                    console.log(linhas[item]);
+                    let ddd = $(linhas[item]).find("td input[name$='DDD']").val();
+                    let numero = $(linhas[item]).find("td input[name$='Numero']").val();
+                    console.log(ddd + " " + numero);
+                    novasLinhas.push(CriaLinha(ddd, numero, contador));
+                    contador++;
+                });
+
+            tbody.html('');
+            $.each(novasLinhas,
+                function(i) {
+                    tbody.append(novasLinhas[i]);
+                });
+
+            $('body ').find('.mascara-telefone').inputmask('99999-9999');
+        }
+
+        function AdicionarTelefone() {
+            let ddd = $('#adicionarDDD').val();
+            let numero = $('#adicionarNumero').val();
+
+            if (!$('#adicionarNumero').inputmask("isComplete")
+                || !$('#adicionarDDD').inputmask("isComplete")) {
+                return;
+            }
+            
+            let tbody = $("#tabelaNumeros tbody");
+            let totalLinhas = tbody.find("tr").length;
+
+            let tr = CriaLinha(ddd, numero, totalLinhas);
+            tbody.append(tr);
+
+            $('#adicionarDDD').val('');
+            $('#adicionarNumero').val('');
+        }
+
+        function CriaLinha(ddd, numero, totalLinhas) {
+            let tr = $("<tr></tr>");
+            let tdId = $("<td>0<input type='hidden' name='Telefones[" + totalLinhas +"].Id' value='0'/></td>");
+
+            let tdDDD = $("<td></td>");
+            tdDDD.html(ddd);
+            let inputDDD = $("<input type='hidden'/>");
+            inputDDD.attr("value", ddd);
+            inputDDD.attr("name", "Telefones[" + totalLinhas + "].DDD");
+
+            let tdNumero = $("<td></td>");
+            tdNumero.html("<span class='mascara-telefone'>" + numero + "</span>");
+            let inputNumero = $("<input type='hidden'/>");
+            inputNumero.attr("value", numero.replace(/_|-/g, ""));
+            inputNumero.attr("name", "Telefones[" + totalLinhas + "].Numero");
+
+            tdId.append(inputDDD);
+            tdId.append(inputNumero);
+
+            let tdAcoes = $("<td><button type='button' class='btn btn-default btnDeletarTelefone'>Deletar</button></td>");
+
+            tr.append(tdId);
+            tr.append(tdDDD);
+            tr.append(tdNumero);
+            tr.append(tdAcoes);
+
+            return tr;
+        }
+    </script>
+}

@@ -1,47 +1,61 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
+﻿using System.Collections.Generic;
 using System.Web.Http;
-using AgendaNUINF.API.Entidades;
+using AgendaNUINF.API.Models;
+using AgendaNUINF.API.Models.Exceptions;
+using AgendaNUINF.EntidadesDTO;
 
 namespace AgendaNUINF.API.Controllers {
     public class PessoasController : ApiController {
-        // GET: api/Pessoas
-        public IEnumerable<Pessoa> Get() {
-            return new List<Pessoa>
-                   {
-                       new Pessoa
-                       {
-                           Id = 1,
-                           Nome = "Fulano da Silva",
-                           Telefones = new List<Telefone>
-                                       {
-                                           new Telefone
-                                           {
-                                               Id = 1,
-                                               DDD = "85",
-                                               Numero =
-                                                   "999998888"
-                                           }
-                                       }
-                       }
-                   };
+        private readonly PessoaNegocio _pessoaNegocio;
+
+        public PessoasController(PessoaNegocio pessoaNegocio) {
+            _pessoaNegocio = pessoaNegocio;
+        }
+
+        public IEnumerable<PessoaDTO> Get(string nome = null, string cpf = null) {
+            return _pessoaNegocio.ListarPessoas(nome, cpf);
         }
 
         // GET: api/Pessoas/5
-        public string Get(int id) {
-            return "value";
+        public IHttpActionResult Get(int id) {
+            if (id <= 0)
+                return BadRequest("Informe um id válido");
+
+            try {
+                return Ok(_pessoaNegocio.PorId(id));
+            } catch (PessoaNaoEncontradaException) {
+                return NotFound();
+            }
         }
 
         // POST: api/Pessoas
-        public void Post([FromBody] string value) { }
+        public IHttpActionResult Post([FromBody] PessoaDTO pessoa) {
+            int idInserido;
+            try {
+                idInserido = _pessoaNegocio.InserirPessoa(pessoa);
+            } catch (CPFExistenteException e) {
+                return BadRequest(e.Message);
+            }
+
+            return CreatedAtRoute<PessoaDTO>("DefaultApi", new {controller = "pessoas", id = idInserido}, null);
+        }
 
         // PUT: api/Pessoas/5
-        public void Put(int id, [FromBody] string value) { }
+        public IHttpActionResult Put(int id, [FromBody] PessoaDTO pessoa) {
+            if (id <= 0)
+                return BadRequest("Informe um id válido");
+
+            try {
+                _pessoaNegocio.Atualizar(pessoa);
+                return Ok();
+            } catch (PessoaNaoEncontradaException) {
+                return NotFound();
+            }
+        }
 
         // DELETE: api/Pessoas/5
-        public void Delete(int id) { }
+        public void Delete(int id) {
+            _pessoaNegocio.Remover(id);
+        }
     }
 }
